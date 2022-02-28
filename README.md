@@ -1,4 +1,4 @@
-# Edited bitnami charts yml files for ELK Stack and Filebeat installation
+# ELK Stack And Filebeat Yaml
 
 The yaml files in this repo are designed to be used when installing bitnami on kubernetes.
 
