@@ -1,0 +1,138 @@
+affinity: {}
+clusterRoleRules:
+  - apiGroups:
+      - ''
+    resources:
+      - namespaces
+      - nodes
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+daemonset:
+  affinity: {}
+  annotations: {}
+  enabled: true
+  envFrom: []
+  extraEnvs: []
+  extraVolumeMounts: []
+  extraVolumes: []
+  filebeatConfig:
+    filebeat.yml: |
+      filebeat.inputs:
+      - type: container
+        paths:
+          - /var/log/containers/*.log
+        processors:
+        - add_kubernetes_metadata:
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+      output.elasticsearch:
+        host: '${NODE_NAME}'
+        hosts: '${ELASTICSEARCH_HOSTS:elasticsearch-master:9200}'
+  hostNetworking: false
+  labels: {}
+  maxUnavailable: 1
+  nodeSelector: {}
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  secretMounts: []
+  securityContext:
+    privileged: false
+    runAsUser: 0
+  tolerations: []
+deployment:
+  affinity: {}
+  annotations: {}
+  enabled: false
+  envFrom: []
+  extraEnvs: []
+  extraVolumeMounts: []
+  extraVolumes: []
+  filebeatConfig:
+    filebeat.yml: |
+      filebeat.inputs:
+      - type: tcp
+        max_message_size: 10MiB
+        host: "localhost:9000"
+
+      output.elasticsearch:
+        host: '${NODE_NAME}'
+        hosts: '${ELASTICSEARCH_HOSTS:elasticsearch-master:9200}'
+  labels: {}
+  nodeSelector: {}
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  secretMounts: []
+  securityContext:
+    privileged: false
+    runAsUser: 0
+  tolerations: []
+dnsConfig: {}
+envFrom: []
+extraContainers: ''
+extraEnvs: []
+extraInitContainers: []
+extraVolumeMounts: []
+extraVolumes: []
+filebeatConfig: {}
+fullnameOverride: ''
+hostAliases: []
+hostPathRoot: /var/lib
+image: docker.elastic.co/beats/filebeat
+imagePullPolicy: IfNotPresent
+imagePullSecrets: []
+imageTag: 7.16.3
+labels: {}
+livenessProbe:
+  exec:
+    command:
+      - sh
+      - '-c'
+      - |
+        #!/usr/bin/env bash -e
+        curl --fail 127.0.0.1:5066
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+managedServiceAccount: true
+nameOverride: ''
+nodeSelector: {}
+podAnnotations: {}
+podSecurityContext: {}
+priorityClassName: ''
+readinessProbe:
+  exec:
+    command:
+      - sh
+      - '-c'
+      - |
+        #!/usr/bin/env bash -e
+        filebeat test output
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+replicas: 1
+resources: {}
+secretMounts: []
+serviceAccount: ''
+serviceAccountAnnotations: {}
+terminationGracePeriod: 30
+tolerations: []
+updateStrategy: RollingUpdate
